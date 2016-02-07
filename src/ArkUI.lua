@@ -71,7 +71,6 @@ function ArkUI:OnAttributeUpdate(powerType)
   if powerType == POWERTYPE_HEALTH then
     local shieldValue = attribute.shieldValue
     local maxShieldValue = attribute.maxShieldValue
-    d(shieldValue)
     if shieldValue > 0 then
       shieldText = " [" .. attribute.shieldValue .. " / " .. attribute.maxShieldValue .. "]"
     end
