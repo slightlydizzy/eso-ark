@@ -152,7 +152,7 @@ function ArkUI:Initialize()
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, ArkUI.EventCombatState)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RETICLE_TARGET_CHANGED, ArkUI.EventReticleTargetChanged)
 
-  self.AdjustAttributeBarsLocation()
+  self:AdjustAttributeBarsLocation()
   PLAYER_ATTRIBUTE_BARS:ForceShow(true)
 end
 
