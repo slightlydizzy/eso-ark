@@ -1,7 +1,33 @@
 ArkUI = {
   name = "ArkUI",
   playerAttributes = {},
+  attributeBarOffset = 200
 }
+
+function ArkUI:AdjustAttributeBarsLocation()
+  local stats = { "Health", "Stamina", "Magicka"}
+  local types = { POWERTYPE_HEALTH, POWERTYPE_STAMINA, POWERTYPE_MAGICKA }
+
+  for i = 1, #stats, 1 do
+    local attributeBar = _G["ZO_PlayerAttribute" .. stats[i]]
+
+    -- Get the current anchor point and adjust it a bit more to the middle of the screen
+    local isValidAnchor, point, relativeTo, relativePoint, offsetX, offsetY = attributeBar:GetAnchor(0)
+
+    -- Adjust both bars to the left/right by half of the width of the health bar
+    if (stats[i] == "Magicka") then
+      offsetX = 0 - self.attributeBarOffset
+      -- Set a new anchor point relative to the health bar in the center
+      attributeBar:ClearAnchors()
+      attributeBar:SetAnchor(point, ZO_PlayerAttributeHealth, relativePoint, offsetX, offsetY)
+    elseif (stats[i] == "Stamina") then
+      offsetX = 0 + self.attributeBarOffset
+      -- Set a new anchor point relative to the health bar in the center
+      attributeBar:ClearAnchors()
+      attributeBar:SetAnchor(point, ZO_PlayerAttributeHealth, relativePoint, offsetX, offsetY)
+    end
+  end
+end
 
 function ArkUI:UpdateLabels()
   local current, max
@@ -119,13 +145,14 @@ function ArkUI:Initialize()
   ZO_TargetUnitFramereticleoverTextArea:ClearAnchors()
   ZO_TargetUnitFramereticleoverTextArea:SetAnchor(point, self.reticleLabel, relPoint, x, y - 6)
 
-  PLAYER_ATTRIBUTE_BARS:ForceShow(true)
-
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, ArkUI.PlayerActivated)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_POWER_UPDATE, ArkUI.PowerUpdate)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_STATS_UPDATED, ArkUI.EventStatsUpdate)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, ArkUI.EventCombatState)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RETICLE_TARGET_CHANGED, ArkUI.EventReticleTargetChanged)
+
+  self.AdjustAttributeBarsLocation()
+  PLAYER_ATTRIBUTE_BARS:ForceShow(true)
 end
 
 function ArkUI.PlayerActivated()
