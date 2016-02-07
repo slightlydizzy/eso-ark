@@ -1,33 +1,15 @@
 ArkUI = {
   name = "ArkUI",
   playerAttributes = {},
-  attributeBarOffset = 200,
+  attributeBarOffsetX = 200,
+  attributeBarOffsetY = -25
 }
 
-function ArkUI:AdjustAttributeBarsLocation()
-  local stats = { "Health", "Stamina", "Magicka"}
-  local types = { POWERTYPE_HEALTH, POWERTYPE_STAMINA, POWERTYPE_MAGICKA }
-  local offset = self.attributeBarOffset
-
-  for i = 1, #stats, 1 do
-    local attributeBar = _G["ZO_PlayerAttribute" .. stats[i]]
-
-    -- Get the current anchor point.
-    local isValidAnchor, point, relativeTo, relativePoint, offsetX, offsetY = attributeBar:GetAnchor(0)
-
-    -- Adjust both bars to the left/right of health bar.
-    if (stats[i] == "Magicka") then
-      offsetX = 0 - offset
-      -- Set a new anchor point relative to the health bar.
-      attributeBar:ClearAnchors()
-      attributeBar:SetAnchor(point, ZO_PlayerAttributeHealth, relativePoint, offsetX, offsetY)
-    elseif (stats[i] == "Stamina") then
-      offsetX = 0 + offset
-      -- Set a new anchor point relative to the health bar.
-      attributeBar:ClearAnchors()
-      attributeBar:SetAnchor(point, ZO_PlayerAttributeHealth, relativePoint, offsetX, offsetY)
-    end
-  end
+-- This only works with control that has one anchor.
+function ArkUI:AdjustControlLocationByOffset(control, offsetX, offsetY)
+  local isValidAnchor, point, relativeTo, relativePoint, originalOffsetX, originalOffsetY = control:GetAnchor(0)
+  control:ClearAnchors()
+  control:SetAnchor(point, relativeTo, relativePoint, originalOffsetX + offsetX, originalOffsetY + offsetY)
 end
 
 function ArkUI:UpdateLabels()
@@ -86,6 +68,7 @@ function ArkUI:Initialize()
   self.unitName = GetUnitName("player")
 
   local health = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Health")
+  self:AdjustControlLocationByOffset(health, 0, self.attributeBarOffsetY)
   healthTable = {
     label = WINDOW_MANAGER:CreateControlFromVirtual(health:GetName() .. "ArkUIAttributeLabel", health, "ArkUIAttributeBarLabel"),
     statIndex = STAT_HEALTH_MAX,
@@ -101,15 +84,16 @@ function ArkUI:Initialize()
   healthTable.diffLabel:SetAnchor(LEFT, healthTable.label, RIGHT, 8, 0)
   healthTable.diffFade = ANIMATION_MANAGER:CreateTimelineFromVirtual("ArkUIAttributeBarDiffFade", healthTable.diffLabel)
   self.playerAttributes[POWERTYPE_HEALTH] = healthTable
-	
+
   local stamina = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Stamina")
+  self:AdjustControlLocationByOffset(stamina, -self.attributeBarOffsetX, self.attributeBarOffsetY)
   local staminaTable = {
-    label = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName().."ArkUIAttributeLabel", stamina, "ArkUIAttributeBarLabel"),
+    label = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName() .. "ArkUIAttributeLabel", stamina, "ArkUIAttributeBarLabel"),
     statIndex = STAT_STAMINA_MAX,
     statRegenIndex = STAT_STAMINA_REGEN_IDLE,
     statRegenInCombatIndex = STAT_STAMINA_REGEN_COMBAT,
-    regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName().."ArkUIRegenLabel", stamina, "ArkUIAttributeBarLabel"),
-    diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName().."ArkUIDiffLabel", stamina, "ArkUIAttributeBarLabel"),
+    regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName() .. "ArkUIRegenLabel", stamina, "ArkUIAttributeBarLabel"),
+    diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName() .. "ArkUIDiffLabel", stamina, "ArkUIAttributeBarLabel"),
     lastValue = 0,
   }
   staminaTable.label:SetAnchor(BOTTOMLEFT, stamina, TOPLEFT, 0, 2)
@@ -118,15 +102,16 @@ function ArkUI:Initialize()
   staminaTable.diffLabel:SetAnchor(LEFT, staminaTable.regenLabel, RIGHT, 8, 0)
   staminaTable.diffFade = ANIMATION_MANAGER:CreateTimelineFromVirtual("ArkUIAttributeBarDiffFade", staminaTable.diffLabel)
   self.playerAttributes[POWERTYPE_STAMINA] = staminaTable
-	
+
   local magicka = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Magicka")
+  self:AdjustControlLocationByOffset(magicka, self.attributeBarOffsetX, self.attributeBarOffsetY)
   local magickaTable = {
-    label = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIAttributeLabel", magicka, "ArkUIAttributeBarLabel"),
+    label = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName() .. "ArkUIAttributeLabel", magicka, "ArkUIAttributeBarLabel"),
     statIndex = STAT_MAGICKA_MAX,
     statRegenIndex = STAT_MAGICKA_REGEN_IDLE,
     statRegenInCombatIndex = STAT_MAGICKA_REGEN_COMBAT,
-    regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIRegenLabel", magicka, "ArkUIAttributeBarLabel"),
-    diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIDiffLabel", magicka, "ArkUIAttributeBarLabel"),
+    regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName() .. "ArkUIRegenLabel", magicka, "ArkUIAttributeBarLabel"),
+    diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName() .. "ArkUIDiffLabel", magicka, "ArkUIAttributeBarLabel"),
     lastValue = 0,
   }
   magickaTable.label:SetAnchor(BOTTOMRIGHT, magicka, TOPRIGHT, 0, 2)
@@ -152,7 +137,6 @@ function ArkUI:Initialize()
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, ArkUI.EventCombatState)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RETICLE_TARGET_CHANGED, ArkUI.EventReticleTargetChanged)
 
-  self:AdjustAttributeBarsLocation()
   PLAYER_ATTRIBUTE_BARS:ForceShow(true)
 end
 
@@ -182,13 +166,14 @@ function ArkUI.EventStatsUpdate(eventType, unitTag)
 end
 
 function ArkUI.EventCombatState(eventType, inCombat)
-	ArkUI:UpdateStats(inCombat)
+  ArkUI:UpdateStats(inCombat)
 end
 
 function ArkUI.EventReticleTargetChanged(eventType)
-  if not DoesUnitExist("reticleover") then return end
-  local current, max = GetUnitPower("reticleover", POWERTYPE_HEALTH)
-  ArkUI:UpdateReticleOverHealth(current, max)
+  if DoesUnitExist("reticleover") then
+    local current, max = GetUnitPower("reticleover", POWERTYPE_HEALTH)
+    ArkUI:UpdateReticleOverHealth(current, max)
+  end
 end
 
 function ArkUI.OnAddOnLoaded(eventType, addonName)
