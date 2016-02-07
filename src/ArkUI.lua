@@ -104,7 +104,7 @@ function ArkUI:Initialize()
   self.playerAttributes[POWERTYPE_STAMINA] = staminaTable
 
   local magicka = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Magicka")
-  self:AdjustControlLocationByOffset(magicka, +self.attributeBarOffsetX, self.attributeBarOffsetY)
+  self:AdjustControlLocationByOffset(magicka, self.attributeBarOffsetX, self.attributeBarOffsetY)
   local magickaTable = {
     label = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIAttributeLabel", magicka, "ArkUIAttributeBarLabel"),
     statIndex = STAT_MAGICKA_MAX,
