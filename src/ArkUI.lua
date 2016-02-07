@@ -12,6 +12,13 @@ function ArkUI:AdjustControlLocationByOffset(control, offsetX, offsetY)
   control:SetAnchor(point, relativeTo, relativePoint, originalOffsetX + offsetX, originalOffsetY + offsetY)
 end
 
+-- This only works with control that has one anchor.
+function ArkUI:AdjustMagickaOrStaminaBarLocation(control, offsetXFromHealthBar)
+  local isValidAnchor, point, _, relativePoint, _, originalOffsetY = control:GetAnchor(0)
+  control:ClearAnchors()
+  control:SetAnchor(point, ZO_PlayerAttributeHealth, relativePoint, offsetXFromHealthBar, originalOffsetY)
+end
+
 function ArkUI:UpdateLabels()
   local current, max
   for powerType, attr in pairs(self.playerAttributes) do
@@ -86,7 +93,7 @@ function ArkUI:Initialize()
   self.playerAttributes[POWERTYPE_HEALTH] = healthTable
 	
   local stamina = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Stamina")
-  self:AdjustControlLocationByOffset(stamina, self.attributeBarOffsetX, 0)
+  self:AdjustMagickaOrStaminaBarLocation(stamina, self.attributeBarOffsetX, 0)
   local staminaTable = {
     label = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName() .. "ArkUIAttributeLabel", stamina, "ArkUIAttributeBarLabel"),
     statIndex = STAT_STAMINA_MAX,
@@ -104,7 +111,7 @@ function ArkUI:Initialize()
   self.playerAttributes[POWERTYPE_STAMINA] = staminaTable
 
   local magicka = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Magicka")
-  self:AdjustControlLocationByOffset(stamina, self.attributeBarOffsetX, 0)
+  self:AdjustMagickaOrStaminaBarLocation(magicka, -self.attributeBarOffsetX, 0)
   local magickaTable = {
     label = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIAttributeLabel", magicka, "ArkUIAttributeBarLabel"),
     statIndex = STAT_MAGICKA_MAX,
