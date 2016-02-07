@@ -1,13 +1,14 @@
 ArkUI = {
   name = "ArkUI",
   playerAttributes = {},
-  attributeBarOffset = 200,
+  attributeBarOffsetX = 200,
+  attributeBarOffsetY = 25
 }
 
 function ArkUI:AdjustAttributeBarsLocation()
   local stats = { "Health", "Stamina", "Magicka"}
   local types = { POWERTYPE_HEALTH, POWERTYPE_STAMINA, POWERTYPE_MAGICKA }
-  local offset = self.attributeBarOffset
+  local offset = self.attributeBarOffsetX
 
   for i = 1, #stats, 1 do
     local attributeBar = _G["ZO_PlayerAttribute" .. stats[i]]
@@ -16,7 +17,10 @@ function ArkUI:AdjustAttributeBarsLocation()
     local isValidAnchor, point, relativeTo, relativePoint, offsetX, offsetY = attributeBar:GetAnchor(0)
 
     -- Adjust both bars to the left/right of health bar.
-    if (stats[i] == "Magicka") then
+    if stats[i] == "Health" then
+      attributeBar:ClearAnchors()
+      attributeBar:SetAnchor(point, relativeTo, relativePoint, offsetX, offsetY - self.attributeBarOffsetY)
+    elseif (stats[i] == "Magicka") then
       offsetX = 0 - offset
       -- Set a new anchor point relative to the health bar.
       attributeBar:ClearAnchors()
