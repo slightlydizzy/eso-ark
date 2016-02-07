@@ -1,6 +1,6 @@
 ArkUI = {
   name = "ArkUI",
-  playerAttributes = {}
+  playerAttributes = {},
 }
 
 function ArkUI:UpdateLabels()
@@ -50,7 +50,7 @@ end
 function ArkUI:UpdateReticleOverHealth(current, max)
   local ratio = current/max
   local percentage = math.floor(ratio * 100)
-  self.reticleLabel:SetColor(1, color, color, 1)
+  self.reticleLabel:SetColor(1, ratio, ratio, 1)
   self.reticleLabel:SetText(current .. " / " .. max .. " (" .. percentage .. "%)")
 end
 
