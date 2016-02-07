@@ -84,7 +84,7 @@ function ArkUI:Initialize()
   healthTable.diffLabel:SetAnchor(LEFT, healthTable.label, RIGHT, 8, 0)
   healthTable.diffFade = ANIMATION_MANAGER:CreateTimelineFromVirtual("ArkUIAttributeBarDiffFade", healthTable.diffLabel)
   self.playerAttributes[POWERTYPE_HEALTH] = healthTable
-	
+
   local stamina = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Stamina")
   self:AdjustControlLocationByOffset(stamina, -self.attributeBarOffsetX, self.attributeBarOffsetY)
   local staminaTable = {
@@ -106,12 +106,12 @@ function ArkUI:Initialize()
   local magicka = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Magicka")
   self:AdjustControlLocationByOffset(magicka, self.attributeBarOffsetX, self.attributeBarOffsetY)
   local magickaTable = {
-    label = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIAttributeLabel", magicka, "ArkUIAttributeBarLabel"),
+    label = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName() .. "ArkUIAttributeLabel", magicka, "ArkUIAttributeBarLabel"),
     statIndex = STAT_MAGICKA_MAX,
     statRegenIndex = STAT_MAGICKA_REGEN_IDLE,
     statRegenInCombatIndex = STAT_MAGICKA_REGEN_COMBAT,
-    regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIRegenLabel", magicka, "ArkUIAttributeBarLabel"),
-    diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIDiffLabel", magicka, "ArkUIAttributeBarLabel"),
+    regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName() .. "ArkUIRegenLabel", magicka, "ArkUIAttributeBarLabel"),
+    diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName() .. "ArkUIDiffLabel", magicka, "ArkUIAttributeBarLabel"),
     lastValue = 0,
   }
   magickaTable.label:SetAnchor(BOTTOMRIGHT, magicka, TOPRIGHT, 0, 2)
@@ -166,13 +166,14 @@ function ArkUI.EventStatsUpdate(eventType, unitTag)
 end
 
 function ArkUI.EventCombatState(eventType, inCombat)
-	ArkUI:UpdateStats(inCombat)
+  ArkUI:UpdateStats(inCombat)
 end
 
 function ArkUI.EventReticleTargetChanged(eventType)
-  if not DoesUnitExist("reticleover") then return end
-  local current, max = GetUnitPower("reticleover", POWERTYPE_HEALTH)
-  ArkUI:UpdateReticleOverHealth(current, max)
+  if DoesUnitExist("reticleover") then
+    local current, max = GetUnitPower("reticleover", POWERTYPE_HEALTH)
+    ArkUI:UpdateReticleOverHealth(current, max)
+  end
 end
 
 function ArkUI.OnAddOnLoaded(eventType, addonName)
