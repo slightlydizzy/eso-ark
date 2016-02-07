@@ -1,0 +1,14 @@
+<GuiXml>
+  <Animations>
+    <AnimationTimeline name="ArkUIAttributeBarDiffFade">
+      <Animations>
+        <AlphaAnimation duration="50" startAlpha="0" endAlpha="0" />
+        <AlphaAnimation delay="50" duration="50" startAlpha="0" endAlpha="1" />
+        <AlphaAnimation delay="2500" duration="400" startAlpha="1" endAlpha="0" />
+      </Animations>
+    </AnimationTimeline>
+  </Animations>
+  <Controls>
+    <Label name="ArkUIAttributeBarLabel" font="$(MEDIUM_FONT)|14|thick-outline" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" virtual="true" />
+  </Controls>
+</GuiXml>
