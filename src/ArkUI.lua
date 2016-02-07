@@ -66,7 +66,7 @@ function ArkUI:OnAttributeUpdate(powerType)
 
   local shieldText = ""
   if powerType == POWERTYPE_HEALTH then
-    shieldText = self:CalculateShieldValue(attribute.shieldValue, attribute.maxShieldValue)
+    shieldText = self:CalculateShieldText(attribute.shieldValue, attribute.maxShieldValue)
   end
 
   attribute.label:SetColor(1, ratio, ratio, 1)
