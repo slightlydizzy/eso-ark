@@ -16,7 +16,7 @@ function ArkUI:UpdateLabels()
   local current, max
   for powerType, attr in pairs(self.playerAttributes) do
     current, max = GetUnitPower("player", powerType)
-    self:OnAttributeUpdate(powerType, current, max)
+    self:UpdatePlayerAttributeValue(powerType, current, max)
     attr.lastValue = current
   end
 end
@@ -34,14 +34,50 @@ function ArkUI:UpdateStats(inCombat)
   end
 end
 
-function ArkUI:OnAttributeUpdate(powerType, current, max, effectiveMax)
+function ArkUI:GetShieldText(unitTag)
+  local shieldValue, maxShieldValue = GetUnitAttributeVisualizerEffectInfo(
+	    unitTag, ATTRIBUTE_VISUAL_POWER_SHIELDING, STAT_MITIGATION, ATTRIBUTE_HEALTH, POWERTYPE_HEALTH)
+	if shield > 0 then
+    return " [" .. shieldValue .. " / " .. maxShieldValue .. "]"
+  end
+
+  return ""
+end
+
+function ArkUI:UpdatePlayerAttributeValue(powerType, currentValue, maxValue)
+  local attribute = self.playerAttributes[powerType]
+  attribute.currentValue = currentValue
+  attribute.maxValue = maxValue
+  self.OnAttributeUpdate(powerType)
+end
+
+function ArkUI:UpdatePlayerShieldValue(currentValue, maxValue)
+  local attribute = self.playerAttributes[POWERTYPE_HEALTH]
+  attribute.shieldValue = currentValue
+  attribute.maxValue = maxValue
+  self.OnAttributeUpdate(POWERTYPE_HEALTH)
+end
+
+function ArkUI:OnAttributeUpdate(powerType)
+  local attribute = self.playerAttributes[powerType]
+
+  local current = attribute.currentValue
+  local max = attribute.maxValue
   local diff = current - self.playerAttributes[powerType].lastValue
   local ratio = current/max
   local percentage = math.floor(ratio * 100)
-  local attribute = self.playerAttributes[powerType]
+
+  local shieldText = ""
+  if powerType == POWERTYPE_HEALTH then
+    local shieldValue = attribute.shieldValue
+    local maxShieldValue = attribute.maxShieldValue
+	  if shield > 0 then
+      shieldText = " [" .. attribute.shieldValue .. " / " .. attribute.maxShieldValue .. "]"
+    end
+  end
 
   attribute.label:SetColor(1, ratio, ratio, 1)
-  attribute.label:SetText(current .. " / " .. max .. " (" .. percentage .. "%)")
+  attribute.label:SetText(current .. " / " .. max .. " (" .. percentage .. "%)" .. shieldText)
   attribute.lastValue = current
 
   if diff ~= 0 then
@@ -56,11 +92,20 @@ function ArkUI:OnAttributeUpdate(powerType, current, max, effectiveMax)
   end
 end
 
-function ArkUI:UpdateReticleOverHealth(current, max)
+function ArkUI:UpdateReticleOverHealth()
+  local current, max = GetUnitPower("reticleover", POWERTYPE_HEALTH)
   local ratio = current/max
   local percentage = math.floor(ratio * 100)
+
+	local shieldValue, maxShieldValue = GetUnitAttributeVisualizerEffectInfo(
+	    "reticleover", ATTRIBUTE_VISUAL_POWER_SHIELDING, STAT_MITIGATION, ATTRIBUTE_HEALTH, POWERTYPE_HEALTH)
+  local shieldText = ""
+  if shield > 0 then
+    shieldText = " [" .. shieldValue .. " / " .. maxShieldValue .. "]"
+  end
+
   self.reticleLabel:SetColor(1, ratio, ratio, 1)
-  self.reticleLabel:SetText(current .. " / " .. max .. " (" .. percentage .. "%)")
+  self.reticleLabel:SetText(current .. " / " .. max .. " - " .. percentage .. "%" .. shieldText)
 end
 
 function ArkUI:Initialize()
@@ -77,6 +122,10 @@ function ArkUI:Initialize()
     regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(health:GetName() .. "ArkUIRegenLabel", health, "ArkUIAttributeBarLabel"),
     diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(health:GetName() .. "ArkUIDiffLabel", health, "ArkUIAttributeBarLabel"),
     lastValue = 0,
+    currentValue = 0,
+    maxValue = 0,
+    shieldValue = 0,
+    maxShieldValue = 0,
   }
   healthTable.label:SetAnchor(BOTTOM, health, TOP, 0, 2)
   healthTable.regenLabel:SetAnchor(RIGHT, healthTable.label, LEFT, -8, 0)
@@ -95,6 +144,8 @@ function ArkUI:Initialize()
     regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName() .. "ArkUIRegenLabel", stamina, "ArkUIAttributeBarLabel"),
     diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName() .. "ArkUIDiffLabel", stamina, "ArkUIAttributeBarLabel"),
     lastValue = 0,
+    currentValue = 0,
+    maxValue = 0,
   }
   staminaTable.label:SetAnchor(BOTTOMLEFT, stamina, TOPLEFT, 0, 2)
   staminaTable.regenLabel:SetAnchor(LEFT, staminaTable.label, RIGHT, 8, 0)
@@ -113,6 +164,8 @@ function ArkUI:Initialize()
     regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName() .. "ArkUIRegenLabel", magicka, "ArkUIAttributeBarLabel"),
     diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName() .. "ArkUIDiffLabel", magicka, "ArkUIAttributeBarLabel"),
     lastValue = 0,
+    currentValue = 0,
+    maxValue = 0,
   }
   magickaTable.label:SetAnchor(BOTTOMRIGHT, magicka, TOPRIGHT, 0, 2)
   magickaTable.regenLabel:SetAnchor(RIGHT, magickaTable.label, LEFT, -8, 0)
@@ -136,6 +189,9 @@ function ArkUI:Initialize()
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_STATS_UPDATED, ArkUI.EventStatsUpdate)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, ArkUI.EventCombatState)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RETICLE_TARGET_CHANGED, ArkUI.EventReticleTargetChanged)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED, ArkUI.OnVisualizationAdded)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED, ArkUI.OnVisualizationRemoved)
+	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED, ArkUI.OnVisualizationUpdated)
 
   PLAYER_ATTRIBUTE_BARS:ForceShow(true)
 end
@@ -145,10 +201,11 @@ function ArkUI.PlayerActivated()
   ArkUI:UpdateStats(false)
 end
 
-function ArkUI.PowerUpdate(eventType, unitTag, powerPoolIndex, powerType, current, max, effectiveMax)
+function ArkUI.PowerUpdate(
+    eventType, unitTag, powerPoolIndex, powerType, currentValue, maxValue, effectiveMax)
   if unitTag == "reticleover" then
     if powerType == POWERTYPE_HEALTH then
-      ArkUI:UpdateReticleOverHealth(current, max)
+      ArkUI:UpdateReticleOverHealth()
     end
     return
   end
@@ -156,7 +213,7 @@ function ArkUI.PowerUpdate(eventType, unitTag, powerPoolIndex, powerType, curren
   if unitTag ~= "player" then return end
   if powerType ~= POWERTYPE_STAMINA and powerType ~= POWERTYPE_HEALTH and powerType ~= POWERTYPE_MAGICKA then return end
 
-  ArkUI:OnAttributeUpdate(powerType, current, max, effectiveMax)
+  ArkUI:UpdatePlayerAttributeValue(powerType, currentValue, maxValue)
 end
 
 function ArkUI.EventStatsUpdate(eventType, unitTag)
@@ -171,9 +228,42 @@ end
 
 function ArkUI.EventReticleTargetChanged(eventType)
   if DoesUnitExist("reticleover") then
-    local current, max = GetUnitPower("reticleover", POWERTYPE_HEALTH)
-    ArkUI:UpdateReticleOverHealth(current, max)
+    ArkUI:UpdateReticleOverHealth()
   end
+end
+
+function ArkUI.OnVisualizationAdded(
+    eventCode, unitTag, unitAttributeVisual, statType, attributeType, powerType, value, maxValue)
+  if unitAttributeVisual == ATTRIBUTE_VISUAL_POWER_SHIELDING then
+    if unitTag == "reticleover" then
+      ArkUI:UpdateReticleOverHealth()
+    elseif unitTag == "player" then
+      ArkUI:UpdatePlayerShieldValue(value, maxValue)
+		end
+	end
+end
+
+function ArkUI.OnVisualizationRemoved(
+    eventCode, unitTag, unitAttributeVisual, statType, attributeType, powerType, value, maxValue)
+  if unitAttributeVisual == ATTRIBUTE_VISUAL_POWER_SHIELDING then
+    if unitTag == "reticleover" then
+      ArkUI:UpdateReticleOverHealth()
+    elseif unitTag == "player" then
+      ArkUI:UpdatePlayerShieldValue(value, maxValue)
+		end
+	end
+end
+
+function ArkUI.OnVisualizationUpdated(
+    eventCode, unitTag, unitAttributeVisual, statType, attributeType, powerType,
+    oldValue, newValue, oldMaxValue, newMaxValue)
+  if unitAttributeVisual == ATTRIBUTE_VISUAL_POWER_SHIELDING then
+    if unitTag == "reticleover" then
+      ArkUI:UpdateReticleOverHealth()
+    elseif unitTag == "player" then
+      ArkUI:UpdatePlayerShieldValue(value, maxValue)
+		end
+	end
 end
 
 function ArkUI.OnAddOnLoaded(eventType, addonName)
