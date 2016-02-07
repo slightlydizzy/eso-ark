@@ -1,6 +1,6 @@
 ArkUI = {
   name = "ArkUI",
-  attributes = {}
+  playerAttributes = {}
 }
 
 function ArkUI:UpdateLabels()
@@ -26,23 +26,24 @@ function ArkUI:UpdateStats(inCombat)
 end
 
 function ArkUI:OnAttributeUpdate(powerType, current, max, effectiveMax)
-  local diff = current - self.attributes[powerType].lastValue
+  local diff = current - self.playerAttributes[powerType].lastValue
   local ratio = current/max
   local percentage = math.floor(ratio * 100)
+  local attribute = playerAttributes[powerType]
 
-  self.attributes[powerType].label:SetColor(1, ratio, ratio, 1)
-  self.attributes[powerType].label:SetText(current .. " / " .. max .. " (" .. percentage .. "%)")
-  self.attributes[powerType].lastValue = current
+  attribute[powerType].label:SetColor(1, ratio, ratio, 1)
+  attribute[powerType].label:SetText(current .. " / " .. max .. " (" .. percentage .. "%)")
+  attribute[powerType].lastValue = current
 
   if diff ~= 0 then
     if diff > 0 then
-      self.attributes[powerType].diffLabel:SetColor(0, 1, 0, 1)
-      self.attributes[powerType].diffLabel:SetText("+"..diff)
+      attribute[powerType].diffLabel:SetColor(0, 1, 0, 1)
+      attribute[powerType].diffLabel:SetText("+"..diff)
     else
-      self.attributes[powerType].diffLabel:SetColor(1, 0, 0, 1)
-      self.attributes[powerType].diffLabel:SetText(diff)
+      attribute[powerType].diffLabel:SetColor(1, 0, 0, 1)
+      attribute[powerType].diffLabel:SetText(diff)
     end
-    self.attributes[powerType].diffFade:PlayFromStart()
+    attribute[powerType].diffFade:PlayFromStart()
   end
 end
 
@@ -72,7 +73,7 @@ function ArkUI:Initialize()
   healthTable.regenLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
   healthTable.diffLabel:SetAnchor(LEFT, healthTable.label, RIGHT, 8, 0)
   healthTable.diffFade = ANIMATION_MANAGER:CreateTimelineFromVirtual("ArkUIAttributeBarDiffFade", healthTable.diffLabel)
-  self.attributes[POWERTYPE_HEALTH] = healthTable
+  self.playerAttributes[POWERTYPE_HEALTH] = healthTable
 	
   local stamina = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Stamina")
   local staminaTable = {
@@ -89,7 +90,7 @@ function ArkUI:Initialize()
   staminaTable.regenLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
   staminaTable.diffLabel:SetAnchor(LEFT, staminaTable.regenLabel, RIGHT, 8, 0)
   staminaTable.diffFade = ANIMATION_MANAGER:CreateTimelineFromVirtual("ArkUIAttributeBarDiffFade", staminaTable.diffLabel)
-  self.attributes[POWERTYPE_STAMINA] = staminaTable
+  self.playerAttributes[POWERTYPE_STAMINA] = staminaTable
 	
   local magicka = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Magicka")
   local magickaTable = {
@@ -106,7 +107,7 @@ function ArkUI:Initialize()
   magickaTable.regenLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
   magickaTable.diffLabel:SetAnchor(RIGHT, magickaTable.regenLabel, LEFT, -8, 0)
   magickaTable.diffFade = ANIMATION_MANAGER:CreateTimelineFromVirtual("ArkUIAttributeBarDiffFade", magickaTable.diffLabel)
-  self.attributes[POWERTYPE_MAGICKA] = magickaTable
+  self.playerAttributes[POWERTYPE_MAGICKA] = magickaTable
 
   self.reticleLabel = WINDOW_MANAGER:CreateControlFromVirtual(
       ZO_TargetUnitFramereticleover:GetName() .. "ArkUILabel",
