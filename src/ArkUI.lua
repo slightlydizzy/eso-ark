@@ -21,7 +21,7 @@ function ArkUI:UpdateStats(inCombat)
       regen = GetPlayerStat(attr.statRegenIndex, STAT_BONUS_OPTION_APPLY_BONUS, STAT_SOFT_CAP_OPTION_APPLY_SOFT_CAP)
     end
 
-    attr.regenLabel:SetText("(" .. val .. "/2s)")
+    attr.regenLabel:SetText("(" .. regen .. "/2s)")
   end
 end
 
@@ -29,21 +29,21 @@ function ArkUI:OnAttributeUpdate(powerType, current, max, effectiveMax)
   local diff = current - self.playerAttributes[powerType].lastValue
   local ratio = current/max
   local percentage = math.floor(ratio * 100)
-  local attribute = playerAttributes[powerType]
+  local attribute = self.playerAttributes[powerType]
 
-  attribute[powerType].label:SetColor(1, ratio, ratio, 1)
-  attribute[powerType].label:SetText(current .. " / " .. max .. " (" .. percentage .. "%)")
-  attribute[powerType].lastValue = current
+  attribute.label:SetColor(1, ratio, ratio, 1)
+  attribute.label:SetText(current .. " / " .. max .. " (" .. percentage .. "%)")
+  attribute.lastValue = current
 
   if diff ~= 0 then
     if diff > 0 then
-      attribute[powerType].diffLabel:SetColor(0, 1, 0, 1)
-      attribute[powerType].diffLabel:SetText("+"..diff)
+      attribute.diffLabel:SetColor(0, 1, 0, 1)
+      attribute.diffLabel:SetText("+"..diff)
     else
-      attribute[powerType].diffLabel:SetColor(1, 0, 0, 1)
-      attribute[powerType].diffLabel:SetText(diff)
+      attribute.diffLabel:SetColor(1, 0, 0, 1)
+      attribute.diffLabel:SetText(diff)
     end
-    attribute[powerType].diffFade:PlayFromStart()
+    attribute.diffFade:PlayFromStart()
   end
 end
 
@@ -51,7 +51,7 @@ function ArkUI:UpdateReticleOverHealth(current, max)
   local ratio = current/max
   local percentage = math.floor(ratio * 100)
   self.reticleLabel:SetColor(1, color, color, 1)
-  self.reticleLabel:SetText(current .. " / " .. max .. " (" .. val .. "%)")
+  self.reticleLabel:SetText(current .. " / " .. max .. " (" .. percentage .. "%)")
 end
 
 function ArkUI:Initialize()
@@ -83,7 +83,7 @@ function ArkUI:Initialize()
     statRegenInCombatIndex = STAT_STAMINA_REGEN_COMBAT,
     regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName().."ArkUIRegenLabel", stamina, "ArkUIAttributeBarLabel"),
     diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName().."ArkUIDiffLabel", stamina, "ArkUIAttributeBarLabel"),
-    lastVal = 0,
+    lastValue = 0,
   }
   staminaTable.label:SetAnchor(BOTTOMLEFT, stamina, TOPLEFT, 0, 2)
   staminaTable.regenLabel:SetAnchor(LEFT, staminaTable.label, RIGHT, 8, 0)
@@ -100,7 +100,7 @@ function ArkUI:Initialize()
     statRegenInCombatIndex = STAT_MAGICKA_REGEN_COMBAT,
     regenLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIRegenLabel", magicka, "ArkUIAttributeBarLabel"),
     diffLabel = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName().."ArkUIDiffLabel", magicka, "ArkUIAttributeBarLabel"),
-    lastVal = 0,
+    lastValue = 0,
   }
   magickaTable.label:SetAnchor(BOTTOMRIGHT, magicka, TOPRIGHT, 0, 2)
   magickaTable.regenLabel:SetAnchor(RIGHT, magickaTable.label, LEFT, -8, 0)
