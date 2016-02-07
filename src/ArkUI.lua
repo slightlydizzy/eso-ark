@@ -34,13 +34,10 @@ function ArkUI:UpdateStats(inCombat)
   end
 end
 
-function ArkUI:GetShieldText(unitTag)
-  local shieldValue, maxShieldValue = GetUnitAttributeVisualizerEffectInfo(
-	    unitTag, ATTRIBUTE_VISUAL_POWER_SHIELDING, STAT_MITIGATION, ATTRIBUTE_HEALTH, POWERTYPE_HEALTH)
-	if shield > 0 then
+function ArkUI:CalculateShieldText(shieldValue, maxShieldValue)
+  if shieldValue ~= nil and shieldValue > 0 then
     return " [" .. shieldValue .. " / " .. maxShieldValue .. "]"
   end
-
   return ""
 end
 
@@ -69,15 +66,11 @@ function ArkUI:OnAttributeUpdate(powerType)
 
   local shieldText = ""
   if powerType == POWERTYPE_HEALTH then
-    local shieldValue = attribute.shieldValue
-    local maxShieldValue = attribute.maxShieldValue
-    if shieldValue > 0 then
-      shieldText = " [" .. attribute.shieldValue .. " / " .. attribute.maxShieldValue .. "]"
-    end
+    shieldText = self:CalculateShieldValue(attribute.shieldValue, attribute.maxShieldValue)
   end
 
   attribute.label:SetColor(1, ratio, ratio, 1)
-  attribute.label:SetText(current .. " / " .. max .. " - " .. percentage .. "%" .. shieldText)
+  attribute.label:SetText(current .. " / " .. max .. shieldText .. " - " .. percentage .. "%")
   attribute.lastValue = current
 
   if diff ~= 0 then
@@ -99,13 +92,10 @@ function ArkUI:UpdateReticleOverHealth()
 
   local shieldValue, maxShieldValue = GetUnitAttributeVisualizerEffectInfo(
       "reticleover", ATTRIBUTE_VISUAL_POWER_SHIELDING, STAT_MITIGATION, ATTRIBUTE_HEALTH, POWERTYPE_HEALTH)
-  local shieldText = ""
-  if shieldValue ~= nil and shieldValue > 0 then
-    shieldText = " [" .. shieldValue .. " / " .. maxShieldValue .. "]"
-  end
+  local shieldText = self:CalculateShieldText(shieldValue, maxShieldValue)
 
   self.reticleLabel:SetColor(1, ratio, ratio, 1)
-  self.reticleLabel:SetText(current .. " / " .. max .. " - " .. percentage .. "%" .. shieldText)
+  self.reticleLabel:SetText(current .. " / " .. max .. shieldText .. " - " .. percentage .. "%")
 end
 
 function ArkUI:Initialize()
