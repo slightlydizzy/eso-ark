@@ -9,6 +9,9 @@
     </AnimationTimeline>
   </Animations>
   <Controls>
-    <Label name="ArkUIAttributeBarLabel" font="$(MEDIUM_FONT)|14|thick-outline" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" virtual="true" />
+    <Label name="ArkUIAttributeBarLabel"
+        font="$(MEDIUM_FONT)|16|thick-outline"
+        color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+        virtual="true" />
   </Controls>
 </GuiXml>
