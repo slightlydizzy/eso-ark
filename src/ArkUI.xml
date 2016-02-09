@@ -36,7 +36,7 @@
           <Anchor point="LEFT"
               relativeTo="$(parent)ResistanceIcon" relativePoint="RIGHT"
               offsetX="5" offsetY="0" />
-		  <Dimensions x="50" y="40" />
+          <Dimensions x="50" y="40" />
         </Label>
       </Controls>
     </TopLevelControl>
