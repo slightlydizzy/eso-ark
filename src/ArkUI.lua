@@ -37,8 +37,8 @@ end
 function ArkUI:UpdateResistances()
   local physicalResistance = GetPlayerStat(STAT_PHYSICAL_RESIST)
   local spellResistance = GetPlayerStat(STAT_SPELL_RESIST)
-  ArkUIUnitFrameResistancePhysical:SetText(physicalResistance)
-  ArkUIUnitFrameResistanceSpell:SetText(spellResistance)
+  ArkUIBelowHealthBarResistancePhysical:SetText(physicalResistance)
+  ArkUIBelowHealthBarResistanceSpell:SetText(spellResistance)
 end
 
 function ArkUI:UpdateStats(inCombat)
