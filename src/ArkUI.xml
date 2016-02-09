@@ -18,7 +18,7 @@
       <Anchor
           point="TOP" relativeTo="ZO_PlayerAttributeHealth" relativePoint="BOTTOM"
           offsetX="0" offsetY="5" />
-          <Dimensions x="1000" y="40" />
+      <Dimensions x="1000" y="40" />
       <Controls>
         <Label name="$(parent)ResistanceIcon" font="ZoFontWinH5" color="ffffff" horizontalAlignment="CENTER" text="[R]">
           <Anchor
