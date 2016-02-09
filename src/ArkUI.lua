@@ -21,7 +21,7 @@ function ArkUI:UpdateLabels()
   end
 end
 
-function ArkUI:UpdateStats(inCombat)
+function ArkUI:UpdateRegen(inCombat)
   local regen
   for powerType, attr in pairs(self.playerAttributes) do
     if inCombat then
@@ -32,6 +32,18 @@ function ArkUI:UpdateStats(inCombat)
 
     attr.regenLabel:SetText("(" .. regen .. "/2s)")
   end
+end
+
+function ArkUI:UpdateResistances()
+  local physicalResistance = GetPlayerStat(STAT_PHYSICAL_RESIST)
+  local spellResistance = GetPlayerStat(STAT_SPELL_RESIST)
+  ArkUIBelowHealthBarPhysicalResistance:SetText(physicalResistance)
+  ArkUIBelowHealthBarSpellResistance:SetText(spellResistance)
+end
+
+function ArkUI:UpdateStats(inCombat)
+  self:UpdateRegen(inCombat)
+  self:UpdateResistances()
 end
 
 function ArkUI:CalculateShieldText(shieldValue, maxShieldValue)
@@ -176,7 +188,7 @@ function ArkUI:Initialize()
 
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, ArkUI.PlayerActivated)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_POWER_UPDATE, ArkUI.PowerUpdate)
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_STATS_UPDATED, ArkUI.EventStatsUpdate)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_STATS_UPDATED, ArkUI.OnEventStatsUpdated)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, ArkUI.EventCombatState)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RETICLE_TARGET_CHANGED, ArkUI.EventReticleTargetChanged)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED, ArkUI.OnVisualizationAdded)
@@ -206,7 +218,7 @@ function ArkUI.PowerUpdate(
   ArkUI:UpdatePlayerAttributeValue(powerType, currentValue, maxValue)
 end
 
-function ArkUI.EventStatsUpdate(eventType, unitTag)
+function ArkUI.OnEventStatsUpdated(eventType, unitTag)
   if unitTag == "player" then
     ArkUI:UpdateStats(IsUnitInCombat("player"))
   end
