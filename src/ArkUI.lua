@@ -37,8 +37,8 @@ end
 function ArkUI:UpdateResistances()
   local physicalResistance = GetPlayerStat(STAT_PHYSICAL_RESIST)
   local spellResistance = GetPlayerStat(STAT_SPELL_RESIST)
-  ArkUIBelowHealthBarResistancePhysical:SetText(physicalResistance)
-  ArkUIBelowHealthBarResistanceSpell:SetText(spellResistance)
+  ArkUIUnitFrameResistancePhysical:SetText(physicalResistance)
+  ArkUIUnitFrameResistanceSpell:SetText(spellResistance)
 end
 
 function ArkUI:UpdateStats(inCombat)
@@ -115,6 +115,8 @@ function ArkUI:Initialize()
   self.unitName = GetUnitName("player")
 
   local health = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Health")
+  WINDOW_MANAGER:CreateControlFromVirtual("ArkUIUnitFrameResistance", health, "ArkUIUnitFrameResistance")
+
   self:AdjustControlLocationByOffset(health, 0, self.attributeBarOffsetY)
   healthTable = {
     label = WINDOW_MANAGER:CreateControlFromVirtual(health:GetName() .. "ArkUIAttributeLabel", health, "ArkUIAttributeBarLabel"),
