@@ -2,7 +2,7 @@ ArkUI = {
   name = "ArkUI",
   playerAttributes = {},
   attributeBarOffsetX = 200,
-  attributeBarOffsetY = -25
+  attributeBarOffsetY = -60
 }
 
 -- This only works with control that has one anchor.
@@ -21,7 +21,7 @@ function ArkUI:UpdateLabels()
   end
 end
 
-function ArkUI:UpdateStats(inCombat)
+function ArkUI:UpdateRegen(inCombat)
   local regen
   for powerType, attr in pairs(self.playerAttributes) do
     if inCombat then
@@ -32,6 +32,18 @@ function ArkUI:UpdateStats(inCombat)
 
     attr.regenLabel:SetText("(" .. regen .. "/2s)")
   end
+end
+
+function ArkUI:UpdateResistances()
+  local physicalResistance = GetPlayerStat(STAT_PHYSICAL_RESIST)
+  local spellResistance = GetPlayerStat(STAT_SPELL_RESIST)
+  ArkUIUnitFrameResistancePhysical:SetText(physicalResistance)
+  ArkUIUnitFrameResistanceSpell:SetText(spellResistance)
+end
+
+function ArkUI:UpdateStats(inCombat)
+  self:UpdateRegen(inCombat)
+  self:UpdateResistances()
 end
 
 function ArkUI:CalculateShieldText(shieldValue, maxShieldValue)
@@ -103,6 +115,8 @@ function ArkUI:Initialize()
   self.unitName = GetUnitName("player")
 
   local health = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Health")
+  WINDOW_MANAGER:CreateControlFromVirtual("ArkUIUnitFrameResistance", health, "ArkUIUnitFrameResistance")
+
   self:AdjustControlLocationByOffset(health, 0, self.attributeBarOffsetY)
   healthTable = {
     label = WINDOW_MANAGER:CreateControlFromVirtual(health:GetName() .. "ArkUIAttributeLabel", health, "ArkUIAttributeBarLabel"),
@@ -117,7 +131,7 @@ function ArkUI:Initialize()
     shieldValue = 0,
     maxShieldValue = 0,
   }
-  healthTable.label:SetAnchor(BOTTOM, health, TOP, 0, 2)
+  healthTable.label:SetAnchor(BOTTOM, health, TOP, 0, -5)
   healthTable.regenLabel:SetAnchor(RIGHT, healthTable.label, LEFT, -8, 0)
   healthTable.regenLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
   healthTable.diffLabel:SetAnchor(LEFT, healthTable.label, RIGHT, 8, 0)
@@ -137,7 +151,7 @@ function ArkUI:Initialize()
     currentValue = 0,
     maxValue = 0,
   }
-  staminaTable.label:SetAnchor(BOTTOMLEFT, stamina, TOPLEFT, 0, 2)
+  staminaTable.label:SetAnchor(BOTTOMLEFT, stamina, TOPLEFT, 0, -5)
   staminaTable.regenLabel:SetAnchor(LEFT, staminaTable.label, RIGHT, 8, 0)
   staminaTable.regenLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
   staminaTable.diffLabel:SetAnchor(LEFT, staminaTable.regenLabel, RIGHT, 8, 0)
@@ -157,7 +171,7 @@ function ArkUI:Initialize()
     currentValue = 0,
     maxValue = 0,
   }
-  magickaTable.label:SetAnchor(BOTTOMRIGHT, magicka, TOPRIGHT, 0, 2)
+  magickaTable.label:SetAnchor(BOTTOMRIGHT, magicka, TOPRIGHT, 0, -5)
   magickaTable.regenLabel:SetAnchor(RIGHT, magickaTable.label, LEFT, -8, 0)
   magickaTable.regenLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
   magickaTable.diffLabel:SetAnchor(RIGHT, magickaTable.regenLabel, LEFT, -8, 0)
@@ -168,7 +182,7 @@ function ArkUI:Initialize()
       ZO_TargetUnitFramereticleover:GetName() .. "ArkUILabel",
       ZO_TargetUnitFramereticleover,
       "ArkUIAttributeBarLabel")
-  self.reticleLabel:SetAnchor(TOP, ZO_TargetUnitFramereticleover, BOTTOM)
+  self.reticleLabel:SetAnchor(TOP, ZO_TargetUnitFramereticleover, BOTTOM, 0, 5)
 
   local _, point, _, relPoint, x, y = ZO_TargetUnitFramereticleoverTextArea:GetAnchor(0)
   ZO_TargetUnitFramereticleoverTextArea:ClearAnchors()
@@ -176,7 +190,7 @@ function ArkUI:Initialize()
 
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, ArkUI.PlayerActivated)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_POWER_UPDATE, ArkUI.PowerUpdate)
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_STATS_UPDATED, ArkUI.EventStatsUpdate)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_STATS_UPDATED, ArkUI.OnEventStatsUpdated)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, ArkUI.EventCombatState)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RETICLE_TARGET_CHANGED, ArkUI.EventReticleTargetChanged)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED, ArkUI.OnVisualizationAdded)
@@ -206,7 +220,7 @@ function ArkUI.PowerUpdate(
   ArkUI:UpdatePlayerAttributeValue(powerType, currentValue, maxValue)
 end
 
-function ArkUI.EventStatsUpdate(eventType, unitTag)
+function ArkUI.OnEventStatsUpdated(eventType, unitTag)
   if unitTag == "player" then
     ArkUI:UpdateStats(IsUnitInCombat("player"))
   end
