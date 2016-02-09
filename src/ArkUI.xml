@@ -15,7 +15,7 @@
         virtual="true" />
 
     <!-- SECTION: Physical and spell resistance UI (below health bar). -->
-    <Label name="ArkUIBelowHealthBarResistance" font="ZoFontWinH4" color="ffffff" horizontalAlignment="CENTER" text="[R]" virtual="true">
+    <Label name="ArkUIUnitFrameResistance" font="ZoFontWinH4" color="ffffff" horizontalAlignment="CENTER" text="[R]" virtual="true">
       <Anchor
           point="TOP" relativeTo="ZO_PlayerAttributeHealth" relativePoint="BOTTOM"
           offsetX="0" offsetY="5" />
