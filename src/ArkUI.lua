@@ -2,7 +2,7 @@ ArkUI = {
   name = "ArkUI",
   playerAttributes = {},
   attributeBarOffsetX = 200,
-  attributeBarOffsetY = -75
+  attributeBarOffsetY = -60
 }
 
 -- This only works with control that has one anchor.
@@ -129,7 +129,7 @@ function ArkUI:Initialize()
     shieldValue = 0,
     maxShieldValue = 0,
   }
-  healthTable.label:SetAnchor(BOTTOM, health, TOP, 0, 2)
+  healthTable.label:SetAnchor(BOTTOM, health, TOP, 0, -5)
   healthTable.regenLabel:SetAnchor(RIGHT, healthTable.label, LEFT, -8, 0)
   healthTable.regenLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
   healthTable.diffLabel:SetAnchor(LEFT, healthTable.label, RIGHT, 8, 0)
@@ -149,7 +149,7 @@ function ArkUI:Initialize()
     currentValue = 0,
     maxValue = 0,
   }
-  staminaTable.label:SetAnchor(BOTTOMLEFT, stamina, TOPLEFT, 0, 2)
+  staminaTable.label:SetAnchor(BOTTOMLEFT, stamina, TOPLEFT, 0, -5)
   staminaTable.regenLabel:SetAnchor(LEFT, staminaTable.label, RIGHT, 8, 0)
   staminaTable.regenLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
   staminaTable.diffLabel:SetAnchor(LEFT, staminaTable.regenLabel, RIGHT, 8, 0)
@@ -169,7 +169,7 @@ function ArkUI:Initialize()
     currentValue = 0,
     maxValue = 0,
   }
-  magickaTable.label:SetAnchor(BOTTOMRIGHT, magicka, TOPRIGHT, 0, 2)
+  magickaTable.label:SetAnchor(BOTTOMRIGHT, magicka, TOPRIGHT, 0, -5)
   magickaTable.regenLabel:SetAnchor(RIGHT, magickaTable.label, LEFT, -8, 0)
   magickaTable.regenLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
   magickaTable.diffLabel:SetAnchor(RIGHT, magickaTable.regenLabel, LEFT, -8, 0)
@@ -180,7 +180,7 @@ function ArkUI:Initialize()
       ZO_TargetUnitFramereticleover:GetName() .. "ArkUILabel",
       ZO_TargetUnitFramereticleover,
       "ArkUIAttributeBarLabel")
-  self.reticleLabel:SetAnchor(TOP, ZO_TargetUnitFramereticleover, BOTTOM)
+  self.reticleLabel:SetAnchor(TOP, ZO_TargetUnitFramereticleover, BOTTOM, 0, 5)
 
   local _, point, _, relPoint, x, y = ZO_TargetUnitFramereticleoverTextArea:GetAnchor(0)
   ZO_TargetUnitFramereticleoverTextArea:ClearAnchors()
