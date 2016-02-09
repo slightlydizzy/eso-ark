@@ -13,5 +13,26 @@
         font="$(MEDIUM_FONT)|16|thick-outline"
         color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
         virtual="true" />
+
+    <TopLevelControl name="ArkUIBelowHealthBarStatus">
+      <Anchor
+          point="CENTER" relativeTo="ZO_PlayerAttributeHealth" relativePoint="CENTER"
+          offsetX="0" offsetY="25" />
+      <Label name="$(parent)ResistanceIcon" text=" RES ">
+        <Anchor
+            point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"
+            offsetX="0" offsetY="0" />
+      </Label>
+      <Label name="$(parent)PhysicalResistance" text="PR">
+        <Anchor point="RIGHT"
+            relativeTo="$(parent)ResistanceIcon" relativePoint="LEFT"
+            offsetX="-25" offsetY="0" />
+      </Label>
+      <Label name="$(parent)SpellResistance" text="SP">
+        <Anchor point="LEFT"
+            relativeTo="$(parent)ResistanceIcon" relativePoint="RIGHT"
+            offsetX="25" offsetY="0" />
+      </Label>
+    </TopLevelControl>
   </Controls>
 </GuiXml>
