@@ -18,19 +18,19 @@
       <Anchor
           point="TOP" relativeTo="ZO_PlayerAttributeHealth" relativePoint="BOTTOM"
           offsetX="0" offsetY="5" />
-	  <Dimensions x="1000" y="40" />
+          <Dimensions x="1000" y="40" />
       <Controls>
         <Label name="$(parent)ResistanceIcon" font="ZoFontWinH5" color="ffffff" horizontalAlignment="CENTER" text="[R]">
           <Anchor
               point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"
               offsetX="0" offsetY="0" />
-		  <Dimensions x="40" y="40" />  
+          <Dimensions x="40" y="40" />  
         </Label>
         <Label name="$(parent)PhysicalResistance" font="ZoFontWinH5" color="ffffff" horizontalAlignment="RIGHT" text="15123">
           <Anchor point="RIGHT"
               relativeTo="$(parent)ResistanceIcon" relativePoint="LEFT"
               offsetX="-5" offsetY="0" />
-		  <Dimensions x="50" y="40" />
+          <Dimensions x="50" y="40" />
         </Label>
         <Label name="$(parent)SpellResistance" font="ZoFontWinH5" color="ffffff" horizontalAlignment="LEFT" text="17112">
           <Anchor point="LEFT"
