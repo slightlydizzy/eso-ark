@@ -2,7 +2,7 @@ ArkUI = {
   name = "ArkUI",
   playerAttributes = {},
   attributeBarOffsetX = 200,
-  attributeBarOffsetY = -25
+  attributeBarOffsetY = -75
 }
 
 -- This only works with control that has one anchor.
