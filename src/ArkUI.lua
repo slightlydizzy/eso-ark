@@ -52,9 +52,9 @@ end
 function ArkUI:UpdateDamageModifiers()
   local USE_MINIMUM = true
   local spellDamage = GetPlayerStat(STAT_SPELL_POWER)
-  local spellCrit = string.format("0.1f", GetCriticalStrikeChance(GetPlayerStat(STAT_SPELL_CRITICAL), USE_MINIMUM))
+  local spellCrit = string.format("%.1f", GetCriticalStrikeChance(GetPlayerStat(STAT_SPELL_CRITICAL), USE_MINIMUM))
   local weaponDamage = GetPlayerStat(STAT_ATTACK_POWER)
-  local weaponCrit = string.format("0.1f", GetCriticalStrikeChance(GetPlayerStat(STAT_CRITICAL_STRIKE), USE_MINIMUM))
+  local weaponCrit = string.format("%.1f", GetCriticalStrikeChance(GetPlayerStat(STAT_CRITICAL_STRIKE), USE_MINIMUM))
   ArkUIUnitFrameSpellPower:SetText("SD: " .. spellDamage .. " Crit: " .. spellCrit .. "%")
   ArkUIUnitFrameWeaponPower:SetText("WD: " .. weaponDamage .. " Crit: " .. weaponCrit .. "%")
 end
