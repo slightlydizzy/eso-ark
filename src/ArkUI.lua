@@ -39,10 +39,11 @@ function ArkUI:UpdateRegen(inCombat)
 end
 
 function ArkUI:UpdateDamageModifiers()
+  local USE_MINIMUM = true
   local spellDamage = GetPlayerStat(STAT_SPELL_POWER)
-  local spellCrit = GetPlayerStat(STAT_SPELL_CRITICAL)
+  local spellCrit = GetCriticalStrikeChance(GetPlayerStat(STAT_SPELL_CRITICAL), USE_MINIMUM)
   local weaponDamage = GetPlayerStat(STAT_ATTACK_POWER)
-  local weaponCrit = GetPlayerStat(STAT_CRITICAL_STRIKE)
+  local weaponCrit = GetCriticalStrikeChance(GetPlayerStat(STAT_CRITICAL_STRIKE), USE_MINIMUM)
   ArkUIUnitFrameSpellPower:SetText("SD: " .. spellDamage .. " Crit: " .. spellCrit .. "%")
   ArkUIUnitFrameWeaponPower:SetText("WD: " .. weaponDamage .. " Crit: " .. weaponCrit .. "%")
 end
@@ -56,7 +57,7 @@ end
 
 function ArkUI:UpdateStats(inCombat)
   self:UpdateRegen(inCombat)
-  -- self:UpdateDamageModifiers()
+  self:UpdateDamageModifiers()
   self:UpdateResistances()
 end
 
@@ -153,6 +154,8 @@ function ArkUI:Initialize()
   self.playerAttributes[POWERTYPE_HEALTH] = healthTable
 
   local stamina = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Stamina")
+  WINDOW_MANAGER:CreateControlFromVirtual("ArkUIUnitFrameWeaponPower", stamina, "ArkUIUnitFrameWeaponPower")
+
   self:AdjustControlLocationByOffset(stamina, -self.attributeBarOffsetX, self.attributeBarOffsetY)
   local staminaTable = {
     label = WINDOW_MANAGER:CreateControlFromVirtual(stamina:GetName() .. "ArkUIAttributeLabel", stamina, "ArkUIAttributeBarLabel"),
@@ -173,6 +176,8 @@ function ArkUI:Initialize()
   self.playerAttributes[POWERTYPE_STAMINA] = staminaTable
 
   local magicka = GetControl(PLAYER_ATTRIBUTE_BARS.control, "Magicka")
+  WINDOW_MANAGER:CreateControlFromVirtual("ArkUIUnitFrameSpellPower", magicka, "ArkUIUnitFrameSpellPower")
+
   self:AdjustControlLocationByOffset(magicka, self.attributeBarOffsetX, self.attributeBarOffsetY)
   local magickaTable = {
     label = WINDOW_MANAGER:CreateControlFromVirtual(magicka:GetName() .. "ArkUIAttributeLabel", magicka, "ArkUIAttributeBarLabel"),
