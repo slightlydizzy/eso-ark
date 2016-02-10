@@ -24,7 +24,7 @@
           <Dimensions x="25" y="25" />
           <Anchor
               point="TOP" relativeTo="$(parent)" relativePoint="TOP"
-              offsetX="0" offsetY="5" />
+              offsetX="0" offsetY="0" />
         </Texture>
         <Label name="$(parent)Physical" font="ZoFontWinH4" color="ffffff" horizontalAlignment="RIGHT">
           <Anchor point="RIGHT"
@@ -39,5 +39,17 @@
       </Controls>
     </Control>
     <!-- SECTION END -->
+
+    <Label name="ArkUIUnitFrameSpellPower" font="ZoFontWinH4" color="ffffff" virtual="true">
+      <Anchor point="TOPRIGHT"
+          relativeTo="ZO_PlayerAttributeMagicka" relativePoint="BOTTOMRIGHT"
+          offsetX="0" offsetY="5" />
+    </Label>
+
+    <Label name="ArkUIUnitFrameWeaponPower" font="ZoFontWinH4" color="ffffff" virtual="true">
+      <Anchor point="TOPLEFT"
+          relativeTo="ZO_PlayerAttributeStamina" relativePoint="BOTTOMLEFT"
+          offsetX="0" offsetY="5" />
+    </Label>
   </Controls>
 </GuiXml>
