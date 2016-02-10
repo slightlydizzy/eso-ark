@@ -3,7 +3,7 @@ ArkUI = {
 
   -- Public settings
   attributeBarOffsetX = 200,
-  attributeBarOffsetY = -60
+  attributeBarOffsetY = -60,
 
   -- Internal
   playerAttributes = {},
@@ -52,9 +52,9 @@ end
 function ArkUI:UpdateDamageModifiers()
   local USE_MINIMUM = true
   local spellDamage = GetPlayerStat(STAT_SPELL_POWER)
-  local spellCrit = GetCriticalStrikeChance(GetPlayerStat(STAT_SPELL_CRITICAL), USE_MINIMUM)
+  local spellCrit = string.format("0.1f", GetCriticalStrikeChance(GetPlayerStat(STAT_SPELL_CRITICAL), USE_MINIMUM))
   local weaponDamage = GetPlayerStat(STAT_ATTACK_POWER)
-  local weaponCrit = GetCriticalStrikeChance(GetPlayerStat(STAT_CRITICAL_STRIKE), USE_MINIMUM)
+  local weaponCrit = string.format("0.1f", GetCriticalStrikeChance(GetPlayerStat(STAT_CRITICAL_STRIKE), USE_MINIMUM))
   ArkUIUnitFrameSpellPower:SetText("SD: " .. spellDamage .. " Crit: " .. spellCrit .. "%")
   ArkUIUnitFrameWeaponPower:SetText("WD: " .. weaponDamage .. " Crit: " .. weaponCrit .. "%")
 end
@@ -134,7 +134,7 @@ function ArkUI:UpdateReticleOverHealth()
   local shieldText = self:CalculateShieldText(shieldValue, maxShieldValue)
 
   self.reticleLabel:SetColor(1, ratio, ratio, 1)
-  self.reticleLabel:SetText(healthNumber .. shieldText .. " - " .. percentage .. "%")
+  self.reticleLabel:SetText(healthText .. shieldText .. " - " .. percentage .. "%")
 end
 
 function ArkUI:Initialize()
