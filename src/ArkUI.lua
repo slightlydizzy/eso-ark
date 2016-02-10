@@ -9,6 +9,17 @@ ArkUI = {
   playerAttributes = {},
 }
 
+local function FormatNumberWithComma(value)
+  local formatted = value
+  while true do  
+    formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+    if (k==0) then
+      break
+    end
+  end
+  return formatted
+end
+
 -- This only works with control that has one anchor.
 function ArkUI:AdjustControlLocationByOffset(control, offsetX, offsetY)
   local isValidAnchor, point, relativeTo, relativePoint, originalOffsetX, originalOffsetY = control:GetAnchor(0)
@@ -115,14 +126,15 @@ end
 function ArkUI:UpdateReticleOverHealth()
   local current, max = GetUnitPower("reticleover", POWERTYPE_HEALTH)
   local ratio = current/max
-  local percentage = math.floor(ratio * 100)
-
   local shieldValue, maxShieldValue = GetUnitAttributeVisualizerEffectInfo(
       "reticleover", ATTRIBUTE_VISUAL_POWER_SHIELDING, STAT_MITIGATION, ATTRIBUTE_HEALTH, POWERTYPE_HEALTH)
+
+  local healthText = FormatNumberWithComma(current) .. " / " .. FormatNumberWithComma(max)
+  local percentage = math.floor(ratio * 100)
   local shieldText = self:CalculateShieldText(shieldValue, maxShieldValue)
 
   self.reticleLabel:SetColor(1, ratio, ratio, 1)
-  self.reticleLabel:SetText(current .. " / " .. max .. shieldText .. " - " .. percentage .. "%")
+  self.reticleLabel:SetText(healthNumber .. shieldText .. " - " .. percentage .. "%")
 end
 
 function ArkUI:Initialize()
